@@ -1,14 +1,7 @@
-## Plantilla de Documentación de Soporte y Uso de herramientas digitales - README.md
-Esta es una plantilla basada en los estándares de la Guía de publicacion de herramientas digitales del BID. Sabemos que no existe un solo estándar para la documentación de soporte y uso de herramientas digitales pero hemos recopilado estas características importantes que debe tener un readme.md para facilitar el uso y amplificar el potencial de impacto de las mismas. Cualquier comentario o recomendación les pedimos generar un issue de consulta o escribirnos directamente a code@iadb.org.
 
-## La plantilla empieza aquí 👇
-
-
-*Esta herramienta digital forma parte del catálogo de herramientas del **Banco Interamericano de Desarrollo**. Puedes conocer más sobre la iniciativa del BID en [code.iadb.org](https://code.iadb.org)*
-
-<h1 align="center">Nombre de la herramienta</h1>
+<h1 align="center">Análisis Estadistico y Comportamiento SNR  de una Señal EMG</h1>
 <p align="center"> Logo e imagen o gif de la interfaz principal de la herramienta</p>
-<p align="center"><img src="https://www.webdevelopersnotes.com/wp-content/uploads/create-a-simple-home-page.png"/></p> 
+<p align="center"><img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.geriatricarea.com%2F2022%2F11%2F03%2Fel-proyecto-solfis-estudia-monitorizar-constantes-vitales-sin-utilizar-dispositivos-de-contacto-directo-con-la-piel%2F&psig=AOvVaw2kxnF8VX0tlvsQuQm68afP&ust=1738975358146000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOi4z5eqsIsDFQAAAAAdAAAAABAE"/></p> 
 
 ## Tabla de contenidos:
 ---
