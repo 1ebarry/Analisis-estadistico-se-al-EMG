@@ -1,107 +1,222 @@
 
 <h1 align="center">Análisis Estadistico y Comportamiento SNR  de una Señal EMG</h1>
-<p align="center"> Logo e imagen o gif de la interfaz principal de la herramienta</p>
-<p align="center"><img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.geriatricarea.com%2F2022%2F11%2F03%2Fel-proyecto-solfis-estudia-monitorizar-constantes-vitales-sin-utilizar-dispositivos-de-contacto-directo-con-la-piel%2F&psig=AOvVaw2kxnF8VX0tlvsQuQm68afP&ust=1738975358146000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOi4z5eqsIsDFQAAAAAdAAAAABAE"/></p> 
+<p align="center"> </p>
+<p align="center"><img src="https://www.geriatricarea.com/wp-content/uploads/2022/11/geriatricarea-proyecto-SOLFIS-IBV.jpg"/></p> 
 
-## Tabla de contenidos:
----
-
-- [Badges o escudos](#badges-o-escudos)
-- [Descripción y contexto](#descripción-y-contexto)
-- [Guía de usuario](#guía-de-usuario)
-- [Guía de instalación](#guía-de-instalación)
-- [Cómo contribuir](#cómo-contribuir)
-- [Código de conducta](#código-de-conducta)
-- [Autor/es](#autores)
-- [Información adicional](#información-adicional)
-- [Licencia](#licencia)
-- [Limitación de responsabilidades - Solo BID](#limitación-de-responsabilidades)
-
-## Badges o escudos
----
-Es común en muchos repositorios open source el uso de badges o escudos para dar visbilidad el uso de microservicios, licencias, descargas, etc. Recomendamos revisar la iniciativa https://shields.io/ donde según consideres necesario podrás generar badges para tu repo. 
-
-### Ejemplos de badges
-
-- code coverage percentage: ![coverage](https://img.shields.io/badge/coverage-80%25-yellowgreen)
-- stable release version: ![version](https://img.shields.io/badge/version-1.2.3-blue)
-- package manager release: ![gem](https://img.shields.io/badge/gem-2.2.0-blue)
-- status of third-party dependencies: ![dependencies](https://img.shields.io/badge/dependencies-out%20of%20date-orange)
-- static code analysis grade: ![codacy](https://img.shields.io/badge/codacy-B-green)
-- [SemVer](https://semver.org/) version observance: ![semver](https://img.shields.io/badge/semver-2.0.0-blue)
-- amount of [Liberapay](https://liberapay.com/) donations per week: ![receives](https://img.shields.io/badge/receives-2.00%20USD%2Fweek-yellow)
-- Python package downloads: ![downloads](https://img.shields.io/badge/downloads-13k%2Fmonth-brightgreen)
-- Chrome Web Store extension rating: ![rating](https://img.shields.io/badge/rating-★★★★☆-brightgreen)
-- [Uptime Robot](https://uptimerobot.com) percentage: ![uptime](https://img.shields.io/badge/uptime-100%25-brightgreen)
-
-### Badges que solicitamos:
----
-En la iniciativa Código para el Desarrollo solicitamos a los equipos que suman sus herramientas al catálogo de sumar el badge generado por el uso del microservicio de evaluación estática de código SonarCloud.
-
-El badge se ve así y redirige al reporte de evaluación estática del último commit de la herramienta:
-
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=EL-BID_Plantilla-de-repositorio&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=EL-BID_Plantilla-de-repositorio)
+## Introducción
+El siguiente proyecto consiste en el analisis fisiológico correspondiente a una señal de electromiografía (EMG) asociada a una neuropatía, Este código consta con el cálculo de los estadisticos fundamentales, tanto descriptivos como con funciones predeterminadas y también una breve contaminación de ruido sobre la señal fisiológica mediante la relación señal-ruido (SNR) lo cual permitió comprender la calidad de la señal y su posible optimización para aplicaciones biomédicas.
 
 
-## Descripción y contexto
----
-Esto es un archivo README. Debe contener la documentación de soporte uso de la herramienta digital. Las siguientes secciones son las secciones recomendadas que debes poner incluir en cualquier herramienta digital. Puedes descargar este archivo para que te sirva como plantilla.
-
-Asegúrate de empezar este archivo con una breve descripción sobre las funcionalidades y contexto de la herramienta digital. Sé conciso y al grano.
+## Contexto 
+La señal fisiológica electromiográfica (EMG)  corresponde a un registro en el músculo tibial anterior de un paciente de 62 años, sexo masculino, con diagnóstico de dolor lumbar crónico y neuropatía por radiculopatía derecha en la raíz nerviosa L5.
+La señal fue capturada mediante un electrodo concéntrico de 25 mm, mientras el paciente realizaba una dorsiflexión suave del pie contra resistencia, seguida de relajación. 
+<p align="center"><img src="https://www.unipamplona.edu.co/unipamplona/portalIG/home_17/recursos/01_general/14092010/daqsenalesemg.png"/></p>
 
 ## Guía de usuario
----
-Explica los pasos básicos sobre cómo usar la herramienta digital. Es una buena sección para mostrar capturas de pantalla o gifs que ayuden a entender la herramienta digital.
- 	
-## Guía de instalación
----
-Paso a paso de cómo instalar la herramienta digital. En esta sección es recomendable explicar la arquitectura de carpetas y módulos que componen el sistema.
+En el encabezado del código encontramos la inicialización de las librerias correspondientes para el correcto funcionamiento del código
+ ```pyton 
+import os  # ubicacion archivo
+import wfdb  # señal
+import matplotlib.pyplot as plt  # graficas
+import numpy as np # operaciones matemáticas 
+from scipy.stats import norm, gaussian_kde # estadísticas avanzadas y Función de Probabilidad
+import statistics # cálculos estadísticos básicos
+```
+Es importante modificar la ruta de ubicación, se aconceja tener los archivos plt.plot, plt.xlabel,plt.ylabel,plt.titleemg_neuropathy.dat" y "emg_neuropathy.hea" junto al archivo del código en una misma carpeta para su correcta compilación
+ ```pyton
+ruta = r'C:\Users\Esteban\Pictures\Analisis estadistico señal EMG\emg_neuropathy'
+datos, info = wfdb.rdsamp(ruta, sampfrom=50, sampto=1000)  #ubicacion
+```
+Para que nuestra señal sea gráficada correctamente es necesario usar los comandos " np.array"  para que los datos se puedan expresar gráficamente y comandos "plt. " para crear cuadricula, nombrar ejes y agregar un titulo para el gráfico.
+```pyton
+datos = np.array(datos).flatten()  # Convertir a 1D si es necesario
+plt.figure(figsize=(10, 5))
+plt.plot(datos, label="Señal EMG", color='c')
+plt.xlabel("Tiempo (ms)")
+plt.ylabel("Amplitud (mV)")  
+plt.title("Señal EMG Neuropatía")
+plt.legend()
+plt.grid()
+```
+Continuamos con los estadisticos descriptivos correspondientes para la media, desviación estandar y coeficiente de variación, los cuales consisten en la operación básica de estas medidas
+```pyton
+#Media
+sumatoriadatos = 0
+for i in datos:
+    sumatoriadatos += i
+media=sumatoriadatos/info['sig_len']
+print(f"Media: {media}")
+```
+<p align="center"><img src="https://www.masscience.com/wp-content/uploads/2019/12/formula-para-calcular-la-media.png"/></p>
 
-Según el tipo de herramienta digital, el nivel de complejidad puede variar. En algunas ocasiones puede ser necesario instalar componentes que tienen dependencia con la herramienta digital. Si este es el caso, añade también la siguiente sección.
+```pyton
+#DESVIACION ESTANDAR 
+resta=datos-media
+#print(resta)
+resta2=resta**2
+#print(resta2)
+sumatoriaresta=0
+for i in resta2:
+    sumatoriaresta += i    
+#print(sumatoriaresta)
+S=np.sqrt(sumatoriaresta/(info['sig_len']-1)) 
+print(f"Desviacion estandar: {S}")
+```
+<p align="center"><img src="https://economipedia.com/wp-content/uploads/Formula-Desviacion-Tipica.jpg"/></p>
 
-La guía de instalación debe contener de manera específica:
-- Los requisitos del sistema operativo para la compilación (versiones específicas de librerías, software de gestión de paquetes y dependencias, SDKs y compiladores, etc.).
-- Las dependencias propias del proyecto, tanto externas como internas (orden de compilación de sub-módulos, configuración de ubicación de librerías dinámicas, etc.).
-- Pasos específicos para la compilación del código fuente y ejecución de tests unitarios en caso de que el proyecto disponga de ellos.
+```pyton
+#COEFICIENTE DE VARIACIÓN
+CV =(S/media)*100
+print(f"Coeficiente de Variación: {CV}%")
+```
+<p align="center"><img src="https://economipedia.com/wp-content/uploads/coeficiente-de-variacion-formula.png"/></p>
 
-### Dependencias
-Descripción de los recursos externos que generan una dependencia para la reutilización de la herramienta digital (librerías, frameworks, acceso a bases de datos y licencias de cada recurso). Es una buena práctica describir las últimas versiones en las que ha sido probada la herramienta digital. 
+Continuamos con los estadisticos realizados con funciones predefinidas correspondientes para la media, desviación estandar y coeficiente de variación, donde usamos la biblioteca numpy la cual nos proporciona calculos eficientes para ciertas operaciones matemáticas
+```pyton
+#MEDIA
+mean=np.mean(datos)
+print(f"Media Numpy: {mean}")
+```
 
-    Puedes usar este estilo de letra diferenciar los comandos de instalación.
+```pyton
+#DESVIACION ESTANDAR
+desviacion_muestral = np.std(datos, ddof=1)  # ddof=1 para muestra
+print(f"Desviación estándar Numpy: {desviacion_muestral:.4f}")
+```
 
-## Cómo contribuir
----
-Esta sección explica a desarrolladores cuáles son las maneras habituales de enviar una solicitud de adhesión de nuevo código (“pull requests”), cómo declarar fallos en la herramienta y qué guías de estilo se deben usar al escribir más líneas de código. También puedes hacer un listado de puntos que se pueden mejorar de tu código para crear ideas de mejora.
+```pyton
+#COEFICIENTE DE VARIACION
+cv = (desviacion_muestral / mean) * 100
+print(f"Coeficiente de Variación Numpy: {cv:.2f}%")
+```
+Para el histograma se uso la herramienta graficadora plt. donde los datos de la señal son guardados por intervalos y renombrados "bins" en este caso se tienen 50 intervalos. Por otra parte se importa la biblioteca "gaussian_kde" para realizar una estimación del comportamiento de los intervalos bins y graficar una tendencía los mas cercana posible(Función de probabilidad), como se muestra en la imagen
+```pyton
+# Histograma
+plt.figure()
+plt.hist(datos, bins=50, edgecolor='black', alpha=1.0, color='orange', density=True)  # Normalizado para densidad
+plt.grid()
 
-## Código de conducta 
----
-El código de conducta establece las normas sociales, reglas y responsabilidades que los individuos y organizaciones deben seguir al interactuar de alguna manera con la herramienta digital o su comunidad. Es una buena práctica para crear un ambiente de respeto e inclusión en las contribuciones al proyecto. 
+# Estimación de la densidad mediante gaussian_kde
+kde = gaussian_kde(datos.flatten())
+# Ajustar los valores de KDE para que alcancen hasta 2.5 en el eje y
+scaling_factor = 2.5 / max(kde(datos.flatten()))  # scaling_factor para calcular el comportamiento de los datos  
+x_vals = np.linspace(datos.min(), datos.max(), 1000) # genera 1000 puntos entre los espacios de los datos para lograr graficar Kde
+plt.plot(x_vals, kde(x_vals) * scaling_factor, color='blue', lw=2, label='Densidad KDE (escalada)') #Grafica y ajusta la curva Kde
+```
+<p align="center"><img src="https://github.com/1ebarry/Analisis-estadistico-se-al-EMG/blob/main/Figure%202025-02-06%20212910.png?raw=true"/></p>
 
-La plataforma Github premia y ayuda a los repositorios dispongan de este archivo. Al crear CODE_OF_CONDUCT.md puedes empezar desde una plantilla sugerida por ellos. Puedes leer más sobre cómo crear un archivo de Código de Conducta (aquí)[https://help.github.com/articles/adding-a-code-of-conduct-to-your-project/]
+Por ultimo tenemos el codigo respectivo para la contaminación de nuestra señal EMG, se realiza con tres tipos de ruido y por tipo dos pruebas, las cuales consisten en primer lugar el SNR con ruido unicamente y en segundo lugar el SNR con ruido y amplitúd aplicada
 
-## Autor/es
----
-Nombra a el/los autor/es original/es. Consulta con ellos antes de publicar un email o un nombre personal. Una manera muy común es dirigirlos a sus cuentas de redes sociales.
+## Prueba 1
+# Ruido Gaussiano
+```pyton
+# --- GENERAR RUIDO GAUSSIANO ---
+ruido_std = np.std(datos) * 0.3  # 30% de la desviación estándar de la señal
+ruido = np.random.normal(0, ruido_std, size=len(datos))  # Ruido gaussiano
+
+# --- SEÑAL CONTAMINADA ---
+señal_ruidosa = datos + ruido
+```
+# Ruido de Red 
+
+```pyton
+frecuencia_red = 60  # Frecuencia del ruido (60 Hz)
+amplitud_ruido = 0.8  # Amplitud del ruido de red
+ruido_red = amplitud_ruido * np.sin(2 * np.pi * frecuencia_red * t)
+
+# Contaminación con ruido de red
+datos_contaminados_red = datos + ruido_red
+```
+# Ruido de Pulso
+```pyton
+# Parámetros del ruido de pulso
+amplitud_ruido_min = -2.5  # Valor mínimo del impulso
+amplitud_ruido_max = 2.5   # Valor máximo del impulso
+ruido_pulso = np.zeros_like(datos)
+num_impulsos = int(0.05 * len(datos))  # 5% de la longitud total de la señal
+indices_impulso = np.random.choice(len(datos), size=num_impulsos, replace=False)
+ruido_pulso[indices_impulso] = np.random.uniform(amplitud_ruido_min, amplitud_ruido_max, size=num_impulsos)
+
+# Contaminación con ruido de pulso
+datos_contaminados_pulso = datos + ruido_pulso
+```
+# Cálculo SNR
+```pyton
+# --- CÁLCULO DEL SNR ---
+def calcular_snr(señal, ruido):
+    potencia_señal = np.mean(señal_ruidosa**2)  # Potencia de la señal
+    potencia_ruido = np.mean(ruido**2)  # Potencia del ruido
+    snr = 10 * np.log10(potencia_señal / potencia_ruido)  # SNR en dB
+```
+<p align="center"><img src="https://image.slidesharecdn.com/sesion05-estadisticaensenales-130528192513-phpapp02/85/Sesion-05-Estadistica-en-senales-19-320.jpg"/></p>
+
+## Prueba 2
+Los datos de la señal EMG son multiplicados por el factor de amplificación = 2 
+# Ruido Gaussiano amplitud aplicada
+```pyton
+plt.subplot(2, 1, 2)
+plt.plot(señal_ruidosa, color='red', label="Señal con Ruido Gaussiano")
+plt.title("Señal EMG Contaminada con Ruido Gaussiano Amplificada")
+plt.xlabel("Tiempo (ms)")
+plt.ylabel("Amplitud (mV)")
+plt.legend()
+plt.grid()
+```
+# Ruido de red amplitud aplicada
+```pyton
+plt.subplot(3, 1, 2)
+plt.plot(t * 1000, datos_con_red, label="Señal con Ruido de Red (60 Hz)", color='orange')
+plt.title("Señal EMG Contaminada con Ruido de Red Amplificada")
+plt.xlabel("Tiempo (ms)")
+plt.ylabel("Amplitud (mV)")
+plt.legend()
+plt.grid()
+```
+# Ruido de pulso amplitud aplicada
+```pyton
+plt.subplot(3, 1, 3)
+plt.plot(t * 1000, datos_con_pulso, label="Señal con Ruido de Pulso", color='purple')
+plt.title("Señal EMG Contaminada con Ruido de Pulso Amplificada")
+plt.xlabel("Tiempo (ms)")
+plt.ylabel("Amplitud (mV)")
+plt.legend()
+plt.grid()
+```
+## Resultados 
+Al compilar este código usted deberá obtener : 
+# Señal EMG 
+<p align="center"><img src="https://github.com/1ebarry/Analisis-estadistico-se-al-EMG/blob/main/SE%C3%91AL%20EMG.png?raw=true"/></p>
+
+<p align="center"><img src=""/></p>
+
+# Histograma con función de probabilidad
+<p align="center"><img src="https://github.com/1ebarry/Analisis-estadistico-se-al-EMG/blob/main/HISTOGRAMA%20CON%20FUNCION%20DE%20PROBABILIDAD.png?raw=true"/></p>
+
+# Señal EMG contaminada por ruido Gaussiano, red y pulso
+<p align="center"><img src="https://github.com/1ebarry/Analisis-estadistico-se-al-EMG/blob/main/SE%C3%91AL%20EMG%20CON%20RUIDO%20GAUSSIANO.png?raw=true"/></p>
+
+<p align="center"><img src="https://github.com/1ebarry/Analisis-estadistico-se-al-EMG/blob/main/SE%C3%91AL%20EMG%20CON%20RUIDO%20DE%20RED%20Y%20PULSO.png?raw=true"/></p>
+
+# Señal EMG con ruidos (Amplificada)
+<p align="center"><img src="https://github.com/1ebarry/Analisis-estadistico-se-al-EMG/blob/main/SE%C3%91AL%20EMG%20AMPLIFICADA%20Y%20SE%C3%91AL%20RUIDO%20GAUSSIANO%20AMPLIFICADA.png?raw=true"/></p>
+
+<p align="center"><img src="https://github.com/1ebarry/Analisis-estadistico-se-al-EMG/blob/main/SE%C3%91AL%20RUIDO%20DE%20RED%20Y%20PULSO%20AMPLIFICADAS.png?raw=true"/></p>
 
 ## Información adicional
----
-Esta es la sección que permite agregar más información de contexto al proyecto como alguna web de relevancia, proyectos similares o que hayan usado la misma tecnología.
-
+Para finalizar es bueno que tenga presente  optimizar el SNR en las señales biomédicas, teniendo en cuenta que el rango ideal según la literatura para una señal EMG de calidad aceptable debe estar entre 15 dB y 30 dB  para garantizar mediciones precisas y representaciones gráficas fieles de la señal capturada, puesto que un valor elevado de SNR implica que la señal sea más clara en comparación con el ruido y un SNR bajo dificulta la identificación de características relevantes debido a la presencia dominante del ruido
+## Bibliografía
+[1] Goldberger, A., Amaral, L., Glass, L., Hausdorff, J., Ivanov, P. C., Mark, R., ... & Stanley, H. E. (2000). PhysioBank, PhysioToolkit, and PhysioNet: Components of a new research resource for complex physiologic signals. Circulation [Online]. 101 (23), pp. e215–e220.
 ## Licencia 
----
+DOI (version 1.0.0):
+https://doi.org/10.13026/C24S3D
 
-La licencia especifica los permisos y las condiciones de uso que el desarrollador otorga a otros desarrolladores que usen y/o modifiquen la herramienta digital.
+Temas:
+neuropatía /
+electromiografía
 
-Incluye en esta sección una nota con el tipo de licencia otorgado a esta herramienta digital. El texto de la licencia debe estar incluído en un archivo *LICENSE.md* o *LICENSE.txt* en la raíz del repositorio.
-
-Si desconoces qué tipos de licencias existen y cuál es la mejor para cada caso, te recomendamos visitar la página https://choosealicense.com/.
-
-Si la herramienta que estás publicando con la iniciativa Código para el Desarrollo ha sido financiada por el BID, te invitamos a revisar la [licencia oficial del banco para publicar software](https://github.com/EL-BID/Plantilla-de-repositorio/blob/master/LICENSE.md)
-
-## Limitación de responsabilidades
-Disclaimer: Esta sección es solo para herramientas financiadas por el BID.
-
-El BID no será responsable, bajo circunstancia alguna, de daño ni indemnización, moral o patrimonial; directo o indirecto; accesorio o especial; o por vía de consecuencia, previsto o imprevisto, que pudiese surgir:
-
-i. Bajo cualquier teoría de responsabilidad, ya sea por contrato, infracción de derechos de propiedad intelectual, negligencia o bajo cualquier otra teoría; y/o
+## Literatura Sugerida
+1.Kimura J. Electrodiagnóstico en enfermedades de los nervios y músculos: principios y práctica , 3.ª edición. Nueva York, Oxford 
+  University Press, 2001.
+2.Reaz MBI, Hussain MS y Mohd-Yasin F. Técnicas de análisis de señales EMG: detección, procesamiento, clasificación y aplicaciones. 
+  Biol. Proced. Online 2006; 8 (1): 11-35.
 
